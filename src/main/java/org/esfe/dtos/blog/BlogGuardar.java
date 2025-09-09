@@ -32,3 +32,4 @@ public class BlogGuardar implements Serializable {
     @NotNull(message = "El ID de usuario no puede ser nulo")
     private Integer idUsuario;
 }
+//se añadio comentario para poder subir el commit y relacionarlo con jira ya que sino no deja vincularlo.
