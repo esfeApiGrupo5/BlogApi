@@ -16,11 +16,14 @@ public interface IBlogService {
 
     BlogSalida obtenerPorId(Integer id);
 
+    // Método para crear un nuevo blog, requiere el ID del usuario para asociarlo.
     BlogSalida crear(BlogGuardar blogGuardar, Integer usuarioId);
 
-    BlogSalida editar(BlogModificar blogModificar);
+    // Método para editar un blog existente, requiere el ID del blog y del usuario para validar permisos.
+    BlogSalida editar(Integer id, BlogModificar blogModificar, Integer usuarioId);
 
-    void eliminarPorId(Integer id);
+    // Método para eliminar un blog, requiere el ID del blog y del usuario para validar permisos.
+    void eliminarPorId(Integer id, Integer usuarioId);
 
     List<Blog> findByTituloContainingIgnoreCaseOrDescripcionContainingIgnoreCase(String titulo, String descripcion);
 }
