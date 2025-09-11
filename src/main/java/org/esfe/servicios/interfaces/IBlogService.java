@@ -16,7 +16,7 @@ public interface IBlogService {
 
     BlogSalida obtenerPorId(Integer id);
 
-    BlogSalida crear(BlogGuardar blogGuardar);
+    BlogSalida crear(BlogGuardar blogGuardar, Integer usuarioId);
 
     BlogSalida editar(BlogModificar blogModificar);
 
