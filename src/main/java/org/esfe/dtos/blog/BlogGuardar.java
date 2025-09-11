@@ -25,11 +25,5 @@ public class BlogGuardar implements Serializable {
     @Size(max = 50, message = "El nombre del autor no puede exceder los 50 caracteres")
     private String autor;
 
-    @NotNull(message = "La fecha de publicación no puede ser nula")
-    @PastOrPresent(message = "La fecha de publicación no puede ser en el futuro")
-    private LocalDateTime fechaPublicacion;
-
-    @NotNull(message = "El ID de usuario no puede ser nulo")
-    private Integer idUsuario;
 }
 //se añadio comentario para poder subir el commit y relacionarlo con jira ya que sino no deja vincularlo.
