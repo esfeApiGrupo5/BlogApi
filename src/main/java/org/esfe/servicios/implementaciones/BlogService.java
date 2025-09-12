@@ -42,8 +42,13 @@ public class BlogService implements IBlogService {
 
     @Override
     public BlogSalida editar(BlogModificar blogModificar) {
-        Blog blog = blogRepository.save(modelMapper.map(blogModificar, Blog.class));
-        return modelMapper.map(blog, BlogSalida.class);
+    // 1. Busca el blog existente en la base de datos por su ID
+    Blog blogExistente = blogRepository.findById(blogModificar.getId())
+            .orElseThrow(() -> new RuntimeException("Blog no encontrado con ID: " + blogModificar.getId()));
+
+    modelMapper.map(blogModificar, blogExistente);
+    blogExistente = blogRepository.save(blogExistente);
+    return modelMapper.map(blogExistente, BlogSalida.class);
     }
 
     @Override
