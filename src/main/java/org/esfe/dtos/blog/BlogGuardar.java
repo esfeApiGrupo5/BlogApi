@@ -2,13 +2,11 @@ package org.esfe.dtos.blog;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.PastOrPresent;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.io.Serializable;
-import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -25,5 +23,7 @@ public class BlogGuardar implements Serializable {
     @Size(max = 50, message = "El nombre del autor no puede exceder los 50 caracteres")
     private String autor;
 
+    @NotNull(message = "El ID de usuario no puede ser nulo")
+    private Integer idUsuario;
 }
 //se añadio comentario para poder subir el commit y relacionarlo con jira ya que sino no deja vincularlo.
