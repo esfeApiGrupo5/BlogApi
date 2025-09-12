@@ -30,6 +30,9 @@ public class BlogService implements IBlogService {
     public BlogSalida crear(BlogGuardar blogGuardar) {
         Blog blog = modelMapper.map(blogGuardar, Blog.class);
 
+    // aseguramos que el ID sea null para que Hibernate haga un INSERT
+    blog.setId(null);
+
     // asignamos la fecha actual al crear
     blog.setFechaPublicacion(LocalDateTime.now());
 
