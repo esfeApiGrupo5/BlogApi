@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import org.modelmapper.ModelMapper;
 import org.esfe.repositorios.IBlogRepository;
+import java.util.Collections;
 
 import org.springframework.web.bind.annotation.RequestBody;
 
@@ -79,25 +80,32 @@ public class BlogController {
     @DeleteMapping("/{id}")
     public ResponseEntity eliminar(@PathVariable Integer id){
         blogService.eliminarPorId(id);
-        return ResponseEntity.ok("Categoría eliminada correctamente");
+        return ResponseEntity.ok("Blog eliminado correctamente");
     }
 
     @GetMapping("/buscar")
     public List<BlogSalida> buscarBlogs(
-            @RequestParam(required = false) String titulo,
-            @RequestParam(required = false) String descripcion) {
+        @RequestParam(required = false) String titulo,
+        @RequestParam(required = false) String descripcion) {
 
-        String tituloBuscar = (titulo != null) ? titulo : "";
-        String descripcionBuscar = (descripcion != null) ? descripcion : "";
+    List<Blog> blogs;
 
-        List<Blog> blogs = blogRepository
-                .findByTituloContainingIgnoreCaseOrDescripcionContainingIgnoreCase(
-                        tituloBuscar,
-                        descripcionBuscar
-                );
+    if (titulo != null && descripcion != null) {
+        // Buscar por título O descripción
+        blogs = blogRepository.findByTituloContainingIgnoreCaseOrDescripcionContainingIgnoreCase(titulo, descripcion);
+    } else if (titulo != null) {
+        // Buscar solo por título
+        blogs = blogRepository.findByTituloContainingIgnoreCase(titulo);
+    } else if (descripcion != null) {
+        // Buscar solo por descripción
+        blogs = blogRepository.findByDescripcionContainingIgnoreCase(descripcion);
+    } else {
+        // Si no se proporciona ningún parámetro todos los blogs
+        blogs = blogRepository.findAll();
+    }
 
-        return blogs.stream()
-                .map(blog -> modelMapper.map(blog, BlogSalida.class))
-                .collect(Collectors.toList());
+    return blogs.stream()
+            .map(blog -> modelMapper.map(blog, BlogSalida.class))
+            .collect(Collectors.toList());
     }
 }

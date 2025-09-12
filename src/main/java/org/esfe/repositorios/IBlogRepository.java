@@ -7,5 +7,7 @@ import java.util.List;
 
 public interface IBlogRepository  extends JpaRepository<Blog, Integer> {
     List<Blog> findByTituloContainingIgnoreCaseOrDescripcionContainingIgnoreCase(String titulo, String descripcion);
+    List<Blog> findByTituloContainingIgnoreCase(String titulo);
+    List<Blog> findByDescripcionContainingIgnoreCase(String descripcion);
 }
 //se añadio comentario para poder subir el commit y relacionarlo con jira ya que sino no deja vincularlo.
