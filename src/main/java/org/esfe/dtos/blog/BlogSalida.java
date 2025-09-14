@@ -14,6 +14,5 @@ public class BlogSalida implements Serializable {
     private String descripcion;
     private String autor;
     private LocalDateTime fechaPublicacion;
-    private Integer idUsuario;
 }
 //se añadio comentario para poder subir el commit y relacionarlo con jira ya que sino no deja vincularlo.
