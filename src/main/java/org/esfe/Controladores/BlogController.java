@@ -89,7 +89,7 @@ public class BlogController {
         @RequestParam(required = false) String descripcion) {
 
     List<Blog> blogs;
-
+//Test
     if (titulo != null && descripcion != null) {
         // Buscar por título O descripción
         blogs = blogRepository.findByTituloContainingIgnoreCaseOrDescripcionContainingIgnoreCase(titulo, descripcion);
