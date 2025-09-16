@@ -22,8 +22,9 @@ import java.util.stream.Collectors;
 import org.modelmapper.ModelMapper;
 import org.esfe.repositorios.IBlogRepository;
 import java.util.Collections;
-
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.http.HttpStatus;
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/api/blogs")
@@ -34,7 +35,7 @@ public class BlogController {
     private IBlogRepository blogRepository;
     @Autowired
     private ModelMapper modelMapper;
-    
+
     @GetMapping
     public ResponseEntity<Page<BlogSalida>> mostrarTodosPaginados(Pageable pageable){
         Page<BlogSalida> blogs = blogService.obtenerTodosPaginados(pageable);
@@ -66,46 +67,46 @@ public class BlogController {
     }
 
     @PostMapping
-    public ResponseEntity<BlogSalida> crear(@RequestBody BlogGuardar blogGuardar){
+    public ResponseEntity<BlogSalida> crear(@Valid @RequestBody BlogGuardar blogGuardar){
         BlogSalida blog = blogService.crear(blogGuardar);
-        return ResponseEntity.ok(blog);
+        return ResponseEntity.status(HttpStatus.CREATED).body(blog);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<BlogSalida> editar(@PathVariable Integer id, @RequestBody BlogModificar blogModificar){
+    public ResponseEntity<BlogSalida> editar(@PathVariable Integer id, @Valid @RequestBody BlogModificar blogModificar){
         BlogSalida blog = blogService.editar(blogModificar);
         return ResponseEntity.ok(blog);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity eliminar(@PathVariable Integer id){
+    public ResponseEntity<String> eliminar(@PathVariable Integer id){
         blogService.eliminarPorId(id);
         return ResponseEntity.ok("Blog eliminado correctamente");
     }
 
     @GetMapping("/buscar")
     public List<BlogSalida> buscarBlogs(
-        @RequestParam(required = false) String titulo,
-        @RequestParam(required = false) String descripcion) {
+            @RequestParam(required = false) String titulo,
+            @RequestParam(required = false) String descripcion) {
 
-    List<Blog> blogs;
+        List<Blog> blogs;
 
-    if (titulo != null && descripcion != null) {
-        // Buscar por título O descripción
-        blogs = blogRepository.findByTituloContainingIgnoreCaseOrDescripcionContainingIgnoreCase(titulo, descripcion);
-    } else if (titulo != null) {
-        // Buscar solo por título
-        blogs = blogRepository.findByTituloContainingIgnoreCase(titulo);
-    } else if (descripcion != null) {
-        // Buscar solo por descripción
-        blogs = blogRepository.findByDescripcionContainingIgnoreCase(descripcion);
-    } else {
-        // Si no se proporciona ningún parámetro todos los blogs
-        blogs = blogRepository.findAll();
-    }
+        if (titulo != null && descripcion != null) {
+            // Buscar por título O descripción
+            blogs = blogRepository.findByTituloContainingIgnoreCaseOrDescripcionContainingIgnoreCase(titulo, descripcion);
+        } else if (titulo != null) {
+            // Buscar solo por título
+            blogs = blogRepository.findByTituloContainingIgnoreCase(titulo);
+        } else if (descripcion != null) {
+            // Buscar solo por descripción
+            blogs = blogRepository.findByDescripcionContainingIgnoreCase(descripcion);
+        } else {
+            // Si no se proporciona ningún parámetro todos los blogs
+            blogs = blogRepository.findAll();
+        }
 
-    return blogs.stream()
-            .map(blog -> modelMapper.map(blog, BlogSalida.class))
-            .collect(Collectors.toList());
+        return blogs.stream()
+                .map(blog -> modelMapper.map(blog, BlogSalida.class))
+                .collect(Collectors.toList());
     }
 }
