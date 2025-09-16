@@ -20,6 +20,9 @@ public class Blog {
 
     private String autor;
 
+    // NUEVA COLUMNA: Referencia al usuario por ID
+    @Column(name = "usuario_id", nullable = false)
+    private Long usuarioId;
+
     private LocalDateTime fechaPublicacion;
 }
-//se añadio comentario para poder subir el commit y relacionarlo con jira ya que sino no deja vincularlo.
