@@ -2,6 +2,7 @@ package org.esfe.dtos.blog;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
+import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -9,6 +10,7 @@ import java.io.Serializable;
 
 @Getter
 @Setter
+@Data
 public class BlogModificar implements Serializable {
     private Integer id;
 
@@ -23,5 +25,9 @@ public class BlogModificar implements Serializable {
     @NotBlank(message = "El autor no puede estar vacío")
     @Size(max = 50, message = "El nombre del autor no puede exceder los 50 caracteres")
     private String autor;
-}
+
+
+    public Integer getId() { return id; }
+    public void setId(Integer id) { this.id = id; }}
+
 //se añadio comentario para poder subir el commit y relacionarlo con jira ya que sino no deja vincularlo.

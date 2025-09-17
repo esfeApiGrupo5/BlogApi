@@ -21,10 +21,12 @@ import java.util.List;
 import java.util.stream.Collectors;
 import org.modelmapper.ModelMapper;
 import org.esfe.repositorios.IBlogRepository;
-import java.util.Collections;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.http.HttpStatus;
 import jakarta.validation.Valid;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 @RestController
 @RequestMapping("/api/blogs")
@@ -36,13 +38,14 @@ public class BlogController {
     @Autowired
     private ModelMapper modelMapper;
 
+    // ✅ OPERACIONES DE LECTURA - Públicas (mantienen el código original)
+
     @GetMapping
     public ResponseEntity<Page<BlogSalida>> mostrarTodosPaginados(Pageable pageable){
         Page<BlogSalida> blogs = blogService.obtenerTodosPaginados(pageable);
         if(blogs.hasContent()){
             return ResponseEntity.ok(blogs);
         }
-
         return ResponseEntity.notFound().build();
     }
 
@@ -52,7 +55,6 @@ public class BlogController {
         if(!blogs.isEmpty()){
             return ResponseEntity.ok(blogs);
         }
-
         return ResponseEntity.notFound().build();
     }
 
@@ -64,24 +66,6 @@ public class BlogController {
             return ResponseEntity.ok(blog);
         }
         return ResponseEntity.notFound().build();
-    }
-
-    @PostMapping
-    public ResponseEntity<BlogSalida> crear(@Valid @RequestBody BlogGuardar blogGuardar){
-        BlogSalida blog = blogService.crear(blogGuardar);
-        return ResponseEntity.status(HttpStatus.CREATED).body(blog);
-    }
-
-    @PutMapping("/{id}")
-    public ResponseEntity<BlogSalida> editar(@PathVariable Integer id, @Valid @RequestBody BlogModificar blogModificar){
-        BlogSalida blog = blogService.editar(blogModificar);
-        return ResponseEntity.ok(blog);
-    }
-
-    @DeleteMapping("/{id}")
-    public ResponseEntity<String> eliminar(@PathVariable Integer id){
-        blogService.eliminarPorId(id);
-        return ResponseEntity.ok("Blog eliminado correctamente");
     }
 
     @GetMapping("/buscar")
@@ -108,5 +92,70 @@ public class BlogController {
         return blogs.stream()
                 .map(blog -> modelMapper.map(blog, BlogSalida.class))
                 .collect(Collectors.toList());
+    }
+
+    // ✅ OPERACIONES DE MODIFICACIÓN - Solo ADMIN (con validación adicional)
+
+    @PostMapping
+    public ResponseEntity<?> crear(@Valid @RequestBody BlogGuardar blogGuardar){
+        // Validación de rol de administrador
+        if (!isAdmin()) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body("Solo los administradores pueden crear blogs");
+        }
+
+        try {
+            BlogSalida blog = blogService.crear(blogGuardar);
+            return ResponseEntity.status(HttpStatus.CREATED).body(blog);
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<?> editar(@PathVariable Integer id, @Valid @RequestBody BlogModificar blogModificar){
+        // Validación de rol de administrador
+        if (!isAdmin()) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body("Solo los administradores pueden editar blogs");
+        }
+
+        try {
+            // Asegurar que el ID del path coincida con el DTO
+            blogModificar.setId(id);
+            BlogSalida blog = blogService.editar(blogModificar);
+            return ResponseEntity.ok(blog);
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<String> eliminar(@PathVariable Integer id){
+        // Validación de rol de administrador
+        if (!isAdmin()) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body("Solo los administradores pueden eliminar blogs");
+        }
+
+        try {
+            blogService.eliminarPorId(id);
+            return ResponseEntity.ok("Blog eliminado correctamente");
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    // ✅ MÉTODO AUXILIAR PARA VALIDACIÓN DE ADMIN
+
+    private boolean isAdmin() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || !authentication.isAuthenticated()) {
+            return false;
+        }
+
+        return authentication.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority)
+                .anyMatch(role -> role.equals("ROLE_ADMIN"));
     }
 }
