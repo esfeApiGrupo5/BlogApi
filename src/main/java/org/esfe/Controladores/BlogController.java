@@ -98,10 +98,10 @@ public class BlogController {
 
     @PostMapping
     public ResponseEntity<?> crear(@Valid @RequestBody BlogGuardar blogGuardar){
-        // Validación de rol de administrador
-        if (!isAdmin()) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN)
-                    .body("Solo los administradores pueden crear blogs");
+        // Validación de que el usuario esté autenticado (cualquier rol)
+        if (!isAuthenticated()) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body("Debes estar logueado para crear un blog");
         }
 
         try {
@@ -121,7 +121,7 @@ public class BlogController {
         }
 
         try {
-            // Asegurar que el ID del path coincida con el DTO
+            // Simplemente asignar el ID del path al DTO
             blogModificar.setId(id);
             BlogSalida blog = blogService.editar(blogModificar);
             return ResponseEntity.ok(blog);
@@ -146,7 +146,13 @@ public class BlogController {
         }
     }
 
-    // ✅ MÉTODO AUXILIAR PARA VALIDACIÓN DE ADMIN
+    // ✅ MÉTODOS AUXILIARES PARA VALIDACIÓN
+
+    private boolean isAuthenticated() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        return authentication != null && authentication.isAuthenticated()
+                && !"anonymousUser".equals(authentication.getName());
+    }
 
     private boolean isAdmin() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();

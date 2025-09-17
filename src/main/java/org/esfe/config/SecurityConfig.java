@@ -27,8 +27,10 @@ public class SecurityConfig {
                         // Permitir operaciones de lectura (GET) sin autenticación
                         .requestMatchers(HttpMethod.GET, "/api/blogs/**").permitAll()
 
-                        // Solo administradores pueden crear, editar y eliminar blogs
-                        .requestMatchers(HttpMethod.POST, "/api/blogs/**").hasRole("ADMIN")
+                        // Permitir crear blogs a cualquier usuario autenticado
+                        .requestMatchers(HttpMethod.POST, "/api/blogs/**").authenticated()
+
+                        // Solo administradores pueden editar y eliminar blogs
                         .requestMatchers(HttpMethod.PUT, "/api/blogs/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.DELETE, "/api/blogs/**").hasRole("ADMIN")
 
