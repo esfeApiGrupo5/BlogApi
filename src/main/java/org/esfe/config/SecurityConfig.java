@@ -28,9 +28,9 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/api/blogs/**").permitAll()
 
                         // Solo administradores pueden crear, editar y eliminar blogs
-                        .requestMatchers(HttpMethod.POST, "/api/blogs/**").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.PUT, "/api/blogs/**").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.DELETE, "/api/blogs/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.POST, "/api/blogs/**").hasRole("ADMINISTRADOR")
+                        .requestMatchers(HttpMethod.PUT, "/api/blogs/**").hasRole("ADMINISTRADOR")
+                        .requestMatchers(HttpMethod.DELETE, "/api/blogs/**").hasRole("ADMINISTRADOR")
 
                         // Cualquier otro endpoint público
                         .anyRequest().permitAll()

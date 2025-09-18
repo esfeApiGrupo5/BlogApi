@@ -156,6 +156,6 @@ public class BlogController {
 
         return authentication.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
-                .anyMatch(role -> role.equals("ROLE_ADMIN"));
+                .anyMatch(role -> role.equals("ROLE_ADMINISTRADOR"));
     }
 }
