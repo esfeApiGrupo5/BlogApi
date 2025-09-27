@@ -38,57 +38,62 @@ public class ProductoController {
     // ✅ OPERACIONES DE LECTURA - Públicas (mantienen el código original)
 
     @GetMapping
-    public ResponseEntity<Page<ProductoSalida>> mostrarTodosPaginados(Pageable pageable){
+    public ResponseEntity<Page<ProductoSalida>> mostrarTodosPaginados(Pageable pageable) {
         Page<ProductoSalida> productos = productoService.obtenerTodosPaginados(pageable);
-        if(productos.hasContent()){
+        if (productos.hasContent()) {
             return ResponseEntity.ok(productos);
         }
         return ResponseEntity.notFound().build();
     }
 
     @GetMapping("/lista")
-    public ResponseEntity<List<ProductoSalida>> mostrarTodos(){
+    public ResponseEntity<List<ProductoSalida>> mostrarTodos() {
         List<ProductoSalida> productos = productoService.obtenerTodos();
-        if(!productos.isEmpty()){
+        if (!productos.isEmpty()) {
             return ResponseEntity.ok(productos);
         }
         return ResponseEntity.notFound().build();
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ProductoSalida> mostrarPorId(@PathVariable Integer id){
-        try{
+    public ResponseEntity<ProductoSalida> mostrarPorId(@PathVariable Integer id) {
+        try {
             ProductoSalida producto = productoService.obtenerPorId(id);
             return ResponseEntity.ok(producto);
-        }catch(RuntimeException e){
+        } catch (RuntimeException e) {
             return ResponseEntity.notFound().build();
         }
     }
 
-    // ✅ OPERACIONES DE ESCRITURA - Privadas (requieren autenticación y autorización)
+    // ✅ OPERACIONES DE ESCRITURA - Privadas (requieren autenticación y
+    // autorización)
 
     @PostMapping
-    public ResponseEntity<ProductoSalida> crear(@Valid @RequestBody ProductoGuardar productoGuardar){
+    public ResponseEntity<ProductoSalida> crear(@Valid @RequestBody ProductoGuardar productoGuardar) {
         ProductoSalida nuevoProducto = productoService.crear(productoGuardar);
         return new ResponseEntity<>(nuevoProducto, HttpStatus.CREATED);
     }
 
-    @PutMapping
-    public ResponseEntity<ProductoSalida> editar(@Valid @RequestBody ProductoModificar productoModificar){
-        try{
-            ProductoSalida productoEditado = productoService.editar(productoModificar);
-            return ResponseEntity.ok(productoEditado);
-        }catch(RuntimeException e){
+    @PutMapping("/{id}")
+    public ResponseEntity<ProductoSalida> editar(@PathVariable Integer id,
+            @Valid @RequestBody ProductoModificar productoModificar) {
+        try {
+            // Asignar el ID de la URL al DTO
+            productoModificar.setId(id);
+
+            ProductoSalida productoActualizado = productoService.editar(productoModificar);
+            return ResponseEntity.ok(productoActualizado);
+        } catch (RuntimeException e) {
             return ResponseEntity.notFound().build();
         }
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> eliminarPorId(@PathVariable Integer id){
-        try{
+    public ResponseEntity<Void> eliminarPorId(@PathVariable Integer id) {
+        try {
             productoService.eliminarPorId(id);
             return ResponseEntity.noContent().build();
-        }catch(RuntimeException e){
+        } catch (RuntimeException e) {
             return ResponseEntity.notFound().build();
         }
     }
@@ -97,12 +102,13 @@ public class ProductoController {
 
     @GetMapping("/buscar")
     public ResponseEntity<List<ProductoSalida>> buscarProductos(@RequestParam(required = false) String nombre,
-                                                               @RequestParam(required = false) String descripcion) {
+            @RequestParam(required = false) String descripcion) {
         List<Producto> productos;
 
         if (nombre != null && descripcion != null) {
             // Buscar por nombre O descripción
-            productos = productoRepository.findByNombreContainingIgnoreCaseOrDescripcionContainingIgnoreCase(nombre, descripcion);
+            productos = productoRepository.findByNombreContainingIgnoreCaseOrDescripcionContainingIgnoreCase(nombre,
+                    descripcion);
         } else if (nombre != null) {
             // Buscar solo por nombre
             productos = productoRepository.findByNombreContainingIgnoreCase(nombre);
