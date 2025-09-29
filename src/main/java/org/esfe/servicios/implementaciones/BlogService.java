@@ -77,8 +77,11 @@ public class BlogService implements IBlogService {
         Blog blogExistente = blogRepository.findById(blogModificar.getId())
                 .orElseThrow(() -> new RuntimeException("Blog no encontrado con ID: " + blogModificar.getId()));
 
-        // Verificar que el usuario sea el propietario del blog
-        if (!blogExistente.getUsuarioId().equals(usuarioIdActual)) {
+        // Verificar que el usuario sea el propietario del blog O sea administrador
+        boolean esAdministrador = verificarSiEsAdministrador();
+        boolean esPropietario = blogExistente.getUsuarioId().equals(usuarioIdActual);
+
+        if (!esPropietario && !esAdministrador) {
             throw new RuntimeException("No tienes permisos para editar este blog");
         }
 
@@ -95,6 +98,17 @@ public class BlogService implements IBlogService {
         }
 
         return blogSalida;
+    }
+
+    // Metodo auxiliar para verificar si el usuario actual es administrador
+    private boolean verificarSiEsAdministrador() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication != null && authentication.getAuthorities() != null) {
+            return authentication.getAuthorities().stream()
+                    .anyMatch(authority -> authority.getAuthority().equals("ROLE_ADMININISTRADOR")
+                            || authority.getAuthority().equals("ADMINISTRADOR") );
+        }
+        return false;
     }
 
     @Override
