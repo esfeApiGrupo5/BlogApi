@@ -105,7 +105,7 @@ public class BlogService implements IBlogService {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication != null && authentication.getAuthorities() != null) {
             return authentication.getAuthorities().stream()
-                    .anyMatch(authority -> authority.getAuthority().equals("ROLE_ADMININISTRADOR")
+                    .anyMatch(authority -> authority.getAuthority().equals("ROLE_ADMINISTRADOR")
                             || authority.getAuthority().equals("ADMINISTRADOR") );
         }
         return false;
