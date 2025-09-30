@@ -13,7 +13,7 @@ import org.springframework.web.client.RestTemplate;
 @Service
 public class UsuarioApiService {
 
-    @Value("${usuario.api.url:http://localhost:8080}")
+    @Value("${usuario.api.url:https://api-gateway-8wvg.onrender.com}")
     private String usuarioApiUrl;
 
     private final RestTemplate restTemplate;
