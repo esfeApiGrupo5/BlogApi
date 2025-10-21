@@ -114,14 +114,8 @@ public class BlogController {
 
     @PutMapping("/{id}")
     public ResponseEntity<?> editar(@PathVariable Integer id, @Valid @RequestBody BlogModificar blogModificar){
-        // Validación de rol de administrador
-        if (!isAdmin()) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN)
-                    .body("Solo los administradores pueden editar blogs");
-        }
-
         try {
-            // Simplemente asignar el ID del path al DTO
+            // Asignar el ID del path al DTO
             blogModificar.setId(id);
             BlogSalida blog = blogService.editar(blogModificar);
             return ResponseEntity.ok(blog);

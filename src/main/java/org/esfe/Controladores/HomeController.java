@@ -7,6 +7,6 @@ import org.springframework.web.bind.annotation.RestController;
 public class HomeController {
     @GetMapping("/")
     public String holaMundo() {
-        return "¡Hola Mundo desde Spring Boot! get";
+        return "¡Hola Mundo desde la api de blog Spring Boot! get";
     }
 }
